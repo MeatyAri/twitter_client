@@ -5,12 +5,12 @@ import java.awt.*;
 import java.awt.event.*;
 
 
-public class RoundedButton extends JButton {
+public class RButton extends JButton {
     private Color normalColor = new Color(70, 130, 180);
     private Color hoverColor = new Color(100,160,210);
     private int radius = 30;
 
-    public RoundedButton(String text) {
+    public RButton(String text) {
         super(text);
         setOpaque(false);
         setContentAreaFilled(false);
@@ -39,9 +39,9 @@ public class RoundedButton extends JButton {
 
         g2.setColor(getBackground());
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), radius, radius);  // Button background
-        g2.dispose();
-
         super.paintComponent(g);
+        
+        g2.dispose();
     }
 
     @Override

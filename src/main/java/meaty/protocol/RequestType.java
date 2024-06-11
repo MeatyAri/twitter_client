@@ -1,4 +1,4 @@
-package meaty.ServerAPIs;
+package meaty.protocol;
 
 public enum RequestType {
     LOGIN,

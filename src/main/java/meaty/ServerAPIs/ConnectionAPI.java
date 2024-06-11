@@ -1,20 +1,27 @@
 package meaty.ServerAPIs;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-public class ConnectionAPI {
-    private final String SERVER_ADDRESS = "localhost";
-    private final int SERVER_PORT = 5000;
-    private final Gson gson = new Gson();
-    SocketChannel socketChannel;
+import meaty.protocol.*;
 
-    public ConnectionAPI() {
+public class ConnectionAPI {
+    private static final String SERVER_ADDRESS = "localhost";
+    private static final int SERVER_PORT = 5000;
+    private static final Gson gson = new Gson();
+
+    private static SocketChannel socketChannel;
+    private static long lastId = 0;
+    private static ArrayList<Response> responses = new ArrayList<>();
+
+    static {
         try {
             socketChannel = SocketChannel.open(new InetSocketAddress(SERVER_ADDRESS, SERVER_PORT));
             socketChannel.configureBlocking(false);
@@ -44,7 +51,9 @@ public class ConnectionAPI {
                                 if (!messageBuffer.hasRemaining()) {
                                     messageBuffer.flip();
                                     String serverMessage = StandardCharsets.UTF_8.decode(messageBuffer).toString();
-                                    System.out.println(serverMessage);
+                                    // System.out.println(serverMessage);
+                                    Response response = gson.fromJson(serverMessage, Response.class);
+                                    responses.add(response);
                                     lengthBuffer.clear();
                                 }
                             }
@@ -62,28 +71,57 @@ public class ConnectionAPI {
         }
     }
 
-    public void sendAuthRequest(String username, String password) throws IOException {
-        JsonObject data = new JsonObject();
-        data.addProperty("username", username);
-        data.addProperty("password", password);
-        sendMessage(RequestType.LOGIN, data);
-    }
-
     public void sendPostRequest(String content) throws IOException {
         JsonObject data = new JsonObject();
         data.addProperty("content", content);
         sendMessage(RequestType.POST, data);
     }
 
-    public void sendMessage(RequestType type, JsonObject data) throws IOException {
-        JsonObject message = new JsonObject();
-        message.addProperty("type", type.toString());
-        message.add("data", data);
-        byte[] messageBytes = gson.toJson(message).getBytes(StandardCharsets.UTF_8);
-        ByteBuffer buffer = ByteBuffer.allocate(4 + messageBytes.length);
-        buffer.putInt(messageBytes.length);
-        buffer.put(messageBytes);
+    public static long sendMessage(RequestType type, JsonObject data) throws IOException {
+        Request request = new Request();
+        request.setId(++lastId);
+        request.setType(type);
+        request.setData(data);
+        byte[] requestBytes = gson.toJson(request).getBytes(StandardCharsets.UTF_8);
+        ByteBuffer buffer = ByteBuffer.allocate(4 + requestBytes.length);
+        buffer.putInt(requestBytes.length);
+        buffer.put(requestBytes);
         buffer.flip();
         socketChannel.write(buffer);
+
+        return request.getId();
+    }
+
+    public static boolean checkConnection() {
+        return (socketChannel != null);
+    }
+
+    public static Response waitForResponse(long id) {
+        while (true) {
+            if (responses.size() <= 0) {
+                try {
+                    Thread.sleep(100);
+                    continue;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            for (Response r : responses) {
+                if (r.getId() == id) {
+                    responses.remove(r);
+                    return r;
+                }
+            }
+        }
+    }
+
+    public static String handleResponse(Response response) {
+        switch (response.getStatus()) {
+            case 200:
+                return response.getData().get("content").getAsString();
+            default:
+                return "Error: " + response.getStatus();
+        }
     }
 }
