@@ -9,7 +9,7 @@ import org.mindrot.jbcrypt.BCrypt;
 // import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import meaty.protocol.*;
+import meaty.ServerAPIs.protocol.*;
 
 public class Auth {
     private static final String DATE_FORMAT = "yyyy-MM-dd";

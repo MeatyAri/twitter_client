@@ -3,9 +3,6 @@ package meaty.auth;
 import java.io.IOException;
 import javax.swing.*;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,7 +16,6 @@ import net.sourceforge.jdatepicker.impl.UtilDateModel;
 import meaty.MainFrame;
 import meaty.tools.*;
 import meaty.ServerAPIs.*;
-import meaty.protocol.*;
 
 public class SelectLoginMethod extends JPanel {
     private MainFrame mainFrame;
@@ -34,7 +30,7 @@ public class SelectLoginMethod extends JPanel {
         // Left panel
         JPanel leftPanel = new RPanel();
         leftPanel.setLayout(new GridBagLayout());
-        leftPanel.setBackground(new Color(15, 86, 216));
+        leftPanel.setBackground(new Color(15, 86, 216)); // Dark blue
         c.insets = new Insets(0, 10, 0, 5); // Add padding
         c.gridx = 0;
         c.gridy = 0;
@@ -42,8 +38,7 @@ public class SelectLoginMethod extends JPanel {
         c.fill = GridBagConstraints.BOTH;
         add(leftPanel, c);
 
-        Image welcomeImage = new ImageIcon("static/imgs/twitter-login-screen.png").getImage();
-        JLabel scaledWelcomeImage = new JLabel(new ImageIcon(welcomeImage.getScaledInstance(700, 650, Image.SCALE_SMOOTH)));
+        JLabel scaledWelcomeImage = imageEdits.getResizeImage("static/imgs/twitter-login-screen.png", 700, 650);
         c.gridx = 0;
         c.gridy = 0;
         c.anchor = GridBagConstraints.CENTER;
@@ -131,7 +126,6 @@ public class SelectLoginMethod extends JPanel {
         signUpButton.setPreferredSize(new Dimension(200, 40));
         signUpButton.setNormalColor(new Color(50, 150, 255));
         signUpButton.setHoverColor(new Color(70, 170, 255));
-        signUpButton.setRadius(40);
         signUpButton.setFont(new Font("Arial", Font.BOLD, 16));
         initialPanel.add(signUpButton, c);
 
@@ -141,7 +135,6 @@ public class SelectLoginMethod extends JPanel {
         logInButton.setPreferredSize(new Dimension(200, 40));
         logInButton.setNormalColor(new Color(70, 70, 70));
         logInButton.setHoverColor(new Color(90, 90, 90));
-        logInButton.setRadius(40);
         logInButton.setFont(new Font("Arial", Font.BOLD, 16));
         initialPanel.add(logInButton, c);
 
@@ -192,7 +185,6 @@ public class SelectLoginMethod extends JPanel {
         loginButton.setPreferredSize(new Dimension(200, 40));
         loginButton.setNormalColor(new Color(50, 150, 255));
         loginButton.setHoverColor(new Color(70, 170, 255));
-        loginButton.setRadius(40);
         loginButton.setFont(new Font("Arial", Font.BOLD, 16));
         c.gridx = 0;
         c.gridy = 5;
@@ -213,8 +205,7 @@ public class SelectLoginMethod extends JPanel {
         GridBagConstraints c = new GridBagConstraints();
 
         // Twitter logo
-        Image logoImage = new ImageIcon("static/imgs/twitter_logo.png").getImage();
-        JLabel logoLabel = new JLabel(new ImageIcon(logoImage.getScaledInstance(62, 51, Image.SCALE_SMOOTH)));
+        JLabel logoLabel = imageEdits.getResizeImage("static/imgs/twitter_logo.png", 62, 51);
         c.gridx = 0;
         c.gridy = 0;
         c.insets = new Insets(10, 20, 10, 20);
@@ -306,7 +297,6 @@ public class SelectLoginMethod extends JPanel {
         signUpButton.setPreferredSize(new Dimension(200, 40));
         signUpButton.setNormalColor(new Color(50, 150, 255));
         signUpButton.setHoverColor(new Color(70, 170, 255));
-        signUpButton.setRadius(40);
         signUpButton.setFont(new Font("Arial", Font.BOLD, 16));
         c.gridx = 0;
         c.gridy = 13;

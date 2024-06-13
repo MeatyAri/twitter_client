@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import meaty.protocol.*;
+import meaty.ServerAPIs.protocol.*;
 
 public class ConnectionAPI {
     private static final String SERVER_ADDRESS = "localhost";

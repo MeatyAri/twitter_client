@@ -16,7 +16,7 @@ public class MainFrame extends JFrame {
 
     public MainFrame() {
         setTitle("Twitter-like Application");
-        ImageIcon icon = new ImageIcon("static/imgs/twitter_logo.png");
+        ImageIcon icon = new ImageIcon("static/imgs/twitter-logo-with-bg.png");
         setIconImage(icon.getImage());
         setSize(1200, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -53,7 +53,8 @@ public class MainFrame extends JFrame {
         // profileButton.addActionListener(e -> showPage("Profile"));
 
         // Set initial page
-        showPage("SelectLoginMethod");
+        // showPage("SelectLoginMethod");
+        showPage("Home");
 
         // if (!ConnectionAPI.checkConnection()) {
         //     showPage("NoConnection");

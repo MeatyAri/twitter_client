@@ -1,10 +1,10 @@
-package meaty.protocol;
+package meaty.ServerAPIs.protocol;
 
 import com.google.gson.JsonObject;
 
-public class Response {
+public class Request {
     private long id;
-    private int status;
+    private RequestType type;
     private JsonObject data;
 
     public long getId() {
@@ -15,12 +15,12 @@ public class Response {
         this.id = id;
     }
 
-    public int getStatus() {
-        return status;
+    public RequestType getType() {
+        return type;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public void setType(RequestType type) {
+        this.type = type;
     }
 
     public JsonObject getData() {

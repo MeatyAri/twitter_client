@@ -8,7 +8,7 @@ import java.awt.event.*;
 public class RButton extends JButton {
     private Color normalColor = new Color(70, 130, 180);
     private Color hoverColor = new Color(100,160,210);
-    private int radius = 30;
+    private int radius = 38;
 
     public RButton(String text) {
         super(text);
