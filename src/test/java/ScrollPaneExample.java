@@ -18,6 +18,7 @@ public class ScrollPaneExample {
         // Create a JScrollPane with the JPanel as the viewport view
         JScrollPane scrollPane = new JScrollPane(panel);
         // Set scroll bar policies
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0,0));
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         // scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);

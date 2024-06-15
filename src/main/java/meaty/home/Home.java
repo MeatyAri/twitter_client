@@ -1,13 +1,11 @@
 package meaty.home;
 
+import java.io.File;
+import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.awt.geom.Ellipse2D;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 
 import meaty.MainFrame;
@@ -19,6 +17,8 @@ public class Home extends JPanel {
     private JPanel centerPanel;
     private JPanel rightPanel;
     private CardLayout cardLayout;
+
+    private JPanel containerPanel;
 
     public Home(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -37,8 +37,10 @@ public class Home extends JPanel {
         c.weightx = 0.18;
         c.weighty = 1.0; // Take up all available vertical space
         c.fill = GridBagConstraints.BOTH;
-        navigationPanel.setPreferredSize(new Dimension((int)(frameBounds.width * c.weightx), frameBounds.height));
-        navigationPanel.setMinimumSize(new Dimension((int)(frameBounds.width * c.weightx), frameBounds.height));
+        Dimension dims = new Dimension((int)(frameBounds.width * c.weightx), frameBounds.height);
+        navigationPanel.setPreferredSize(dims);
+        navigationPanel.setMinimumSize(dims);
+        navigationPanel.setMaximumSize(dims);
         add(navigationPanel, c);
     
         JPanel navPanel = createNavigationPanel();
@@ -58,16 +60,18 @@ public class Home extends JPanel {
         c.weightx = 0.45;
         c.weighty = 1.0; // Take up all available vertical space
         c.fill = GridBagConstraints.BOTH;
-        centerPanel.setPreferredSize(new Dimension((int)(frameBounds.width * c.weightx), frameBounds.height));
-        centerPanel.setMinimumSize(new Dimension((int)(frameBounds.width * c.weightx), frameBounds.height));
+        dims = new Dimension((int)(frameBounds.width * c.weightx), frameBounds.height);
+        centerPanel.setPreferredSize(dims);
+        centerPanel.setMinimumSize(dims);
+        centerPanel.setMaximumSize(dims);
         add(centerPanel, c);
 
-        JPanel mainPanel = createCenterPanel();
+        JScrollPane mainPanel = createCenterPanel();
         c.insets = new Insets(0, 0, 0, 0); // Add padding
         c.gridx = 0;
         c.gridy = 0;
-        c.anchor = GridBagConstraints.NORTH;
-        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.CENTER;
+        c.fill = GridBagConstraints.BOTH;
         centerPanel.add(mainPanel, c);
     
         // Right panel
@@ -79,8 +83,10 @@ public class Home extends JPanel {
         c.weightx = 0.27;
         c.weighty = 1.0; // Take up all available vertical space
         c.fill = GridBagConstraints.BOTH;
-        rightPanel.setPreferredSize(new Dimension((int)(frameBounds.width * c.weightx), frameBounds.height));
-        rightPanel.setMinimumSize(new Dimension((int)(frameBounds.width * c.weightx), frameBounds.height));
+        dims = new Dimension((int)(frameBounds.width * c.weightx), frameBounds.height);
+        rightPanel.setPreferredSize(dims);
+        rightPanel.setMinimumSize(dims);
+        rightPanel.setMaximumSize(dims);
         add(rightPanel, c);
 
         JPanel searchPanel = createRightPanel();
@@ -188,7 +194,7 @@ public class Home extends JPanel {
         return navPanel;
     }
 
-    private JPanel createCenterPanel() {
+    private JScrollPane createCenterPanel() {
         // Create the main panel with GridBagLayout
         JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBackground(Color.BLACK);
@@ -211,8 +217,12 @@ public class Home extends JPanel {
         homePanel.add(homeLabel, BorderLayout.WEST);
 
         // separator
-        JSeparator separator = new JSeparator();
-        separator.setForeground(getBackground().brighter());
+        JPanel separator = new JPanel();        
+        separator.setBackground(getBackground().brighter());
+        Dimension seperatorDims = new Dimension(0, 1);
+        separator.setPreferredSize(seperatorDims);
+        separator.setMinimumSize(seperatorDims);
+        separator.setMaximumSize(seperatorDims);
         c.insets = new Insets(0, 0, 0, 0);
         c.gridx = 0;
         c.gridy = 1;
@@ -240,7 +250,50 @@ public class Home extends JPanel {
         c.fill = GridBagConstraints.HORIZONTAL;
         mainPanel.add(thickSeparator, c);
 
-        return mainPanel;
+        // Center panel
+        containerPanel = new JPanel(new GridBagLayout());
+        containerPanel.setBackground(Color.BLACK);
+
+        int width = (int)(mainFrame.getWidth() * 0.45);
+        JLabel dummyLabel = new JLabel();
+        dummyLabel.setForeground(new Color(0, 0, 0, 0));
+        homePanel.add(dummyLabel, BorderLayout.EAST);
+
+        // Initialize the resizeListener
+        ComponentListener resizeListener = new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                Component component = e.getComponent();
+                // int width = (int)(mainFrame.getWidth() * 0.45);
+                int height = component.getHeight() + 1;
+
+                // Update the JLabel with the new size
+                containerPanel.setPreferredSize(new Dimension(width, height));
+                containerPanel.setMinimumSize(new Dimension(width, height));
+                containerPanel.setMaximumSize(new Dimension(width, height));
+                dummyLabel.setText(height + "px");
+            }
+        };
+
+        mainPanel.addComponentListener(resizeListener);
+
+        c.insets = new Insets(0, 0, 0, 0); // Add padding
+        c.gridx = 0;
+        c.gridy = 0;
+        c.weightx = 1.0;
+        c.weighty = 1.0;
+        c.anchor = GridBagConstraints.NORTH;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        containerPanel.add(mainPanel, c);
+
+        JScrollPane containerScrollPane = new JScrollPane(containerPanel);
+        containerScrollPane.setBackground(Color.BLACK);
+        containerScrollPane.getViewport().setBackground(Color.BLACK);
+        containerScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        containerScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0,0));
+        containerScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+        return containerScrollPane;
     }
 
     private JPanel createTweetPanel() {
@@ -283,8 +336,12 @@ public class Home extends JPanel {
         tweetPanel.add(tweetTextArea, c);
 
         // Separation line
-        JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
-        separator.setForeground(Color.GRAY);
+        JPanel separator = new JPanel();        
+        separator.setBackground(Color.GRAY);
+        Dimension seperatorDims = new Dimension(0, 1);
+        separator.setPreferredSize(seperatorDims);
+        separator.setMinimumSize(seperatorDims);
+        separator.setMaximumSize(seperatorDims);
         c.gridx = 1;
         c.gridy = 1;
         c.gridwidth = 2;
@@ -313,7 +370,10 @@ public class Home extends JPanel {
         RButton tweetButton = new RButton("Tweet");
         Font font = new Font("Liberation Sans", Font.BOLD, 13); // Set the font
         tweetButton.setFont(font);
-        tweetButton.setPreferredSize(new Dimension(70, 35));
+        Dimension btnDims = new Dimension(70, 35);
+        tweetButton.setPreferredSize(btnDims);
+        tweetButton.setMinimumSize(btnDims);
+        tweetButton.setMaximumSize(btnDims);
         tweetButton.setNormalColor(new Color(50, 150, 255));
         tweetButton.setHoverColor(new Color(70, 170, 255));
         tweetButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));

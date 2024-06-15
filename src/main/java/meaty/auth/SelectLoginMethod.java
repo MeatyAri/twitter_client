@@ -16,6 +16,7 @@ import net.sourceforge.jdatepicker.impl.UtilDateModel;
 import meaty.MainFrame;
 import meaty.tools.*;
 import meaty.ServerAPIs.*;
+import meaty.ServerAPIs.protocol.*;
 
 public class SelectLoginMethod extends JPanel {
     private MainFrame mainFrame;
@@ -329,8 +330,18 @@ public class SelectLoginMethod extends JPanel {
         
         try {
             long id = Auth.sendSignUpRequest(username, password, email, phone, birthDate, bio);
-            String response = ConnectionAPI.handleResponse(ConnectionAPI.waitForResponse(id));
-            JOptionPane.showMessageDialog(null, response);
+            Response response = ConnectionAPI.awaitResponse(id);
+
+            String token = response.getData().get("token").getAsString();
+            ConnectionAPI.saveToken(token);
+
+            String responseStr = ConnectionAPI.getResponseStr(response);
+            JOptionPane.showMessageDialog(null, responseStr);
+
+            if (response.getStatus() == 200) {
+                // Login successful, redirect to home page
+                mainFrame.showPage("Home");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -348,8 +359,18 @@ public class SelectLoginMethod extends JPanel {
 
         try {
             long id = Auth.sendLoginRequest(username, password);
-            String response = ConnectionAPI.handleResponse(ConnectionAPI.waitForResponse(id));
-            JOptionPane.showMessageDialog(null, response);
+            Response response = ConnectionAPI.awaitResponse(id);
+
+            String token = response.getData().get("token").getAsString();
+            ConnectionAPI.saveToken(token);
+
+            String responseStr = ConnectionAPI.getResponseStr(response);
+            JOptionPane.showMessageDialog(null, responseStr);
+
+            if (response.getStatus() == 200) {
+                // Login successful, redirect to home page
+                mainFrame.showPage("Home");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

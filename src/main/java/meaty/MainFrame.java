@@ -1,11 +1,13 @@
 package meaty;
 
+import java.io.IOException;
 import javax.swing.*;
 
 import meaty.auth.SelectLoginMethod;
 import meaty.home.*;
 import meaty.error.NoConnection;
-import meaty.ServerAPIs.ConnectionAPI;
+import meaty.ServerAPIs.*;
+import meaty.ServerAPIs.protocol.*;
 
 import java.awt.*;
 
@@ -53,12 +55,8 @@ public class MainFrame extends JFrame {
         // profileButton.addActionListener(e -> showPage("Profile"));
 
         // Set initial page
-        // showPage("SelectLoginMethod");
-        showPage("Home");
-
-        // if (!ConnectionAPI.checkConnection()) {
-        //     showPage("NoConnection");
-        // }
+        setInitialPage();
+        // showPage("Home");
 
         // Add components to the frame
         add(mainPanel, BorderLayout.CENTER);
@@ -68,6 +66,34 @@ public class MainFrame extends JFrame {
 
     public void showPage(String pageName) {
         cardLayout.show(mainPanel, pageName);
+    }
+
+    private void setInitialPage() {
+        if (!ConnectionAPI.checkConnection()) {
+            showPage("NoConnection");
+            return;
+        }
+
+        // Check if token exists
+        String token = ConnectionAPI.readToken();
+
+        if (token == null || token.isEmpty()) {
+            showPage("SelectLoginMethod");
+            return;
+        }
+
+        // Check if token is valid
+        try {
+            long id = Auth.sendLoginRequest(token);
+            Response response = ConnectionAPI.awaitResponse(id);
+
+            if (response.getStatus() == 200) {
+                // Login successful, redirect to home page
+                showPage("Home");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {

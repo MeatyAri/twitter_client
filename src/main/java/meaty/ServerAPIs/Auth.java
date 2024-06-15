@@ -25,6 +25,12 @@ public class Auth {
         return ConnectionAPI.sendMessage(RequestType.LOGIN, data);
     }
 
+    public static long sendLoginRequest(String token) throws IOException {
+        JsonObject data = new JsonObject();
+        data.addProperty("token", token);
+        return ConnectionAPI.sendMessage(RequestType.LOGIN, data);
+    }
+
     public static long sendSignUpRequest(String username, String password, String email, String phone, Date birthDate, String bio) throws IOException {
         JsonObject data = new JsonObject();
 
