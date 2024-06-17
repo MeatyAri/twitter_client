@@ -27,17 +27,11 @@ public class MainFrame extends JFrame {
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
-        // Add pages to main panel
-        // Error pages
-        mainPanel.add(new NoConnection(this), "NoConnection");
-
-        // Login page
-        mainPanel.add(new SelectLoginMethod(this), "SelectLoginMethod");
-
-        // Home page
-        mainPanel.add(new Profile(this), "Profile");
-        mainPanel.add(new AddPost(this), "Add Post");
-        mainPanel.add(new Home(this), "Home");
+        try {
+            addPages();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // // Create the bottom navigation bar
         // JPanel bottomNav = new JPanel(new GridLayout(1, 4));
@@ -65,17 +59,59 @@ public class MainFrame extends JFrame {
     }
 
     public void showPage(String pageName) {
+        refreshPage(pageName);
         cardLayout.show(mainPanel, pageName);
     }
 
-    private void setInitialPage() {
+    public void refreshPage(String pageName) {
+        switch (pageName) {
+            case "Profile":
+                mainPanel.add(new Profile(this), "Profile");
+                break;
+            case "Home":
+                mainPanel.add(new Home(this), "Home");
+                break;
+        }
+    }
+
+    // public void refreshPage(String pageName, Component c) {
+    //     addPage(pageName, c);
+    //     cardLayout.show(mainPanel, pageName);
+    // }
+
+    // public void refreshPage(Component c) {
+    //     addPage(c);
+    //     cardLayout.show(mainPanel, c.getClass().getSimpleName());
+    // }
+
+    // public void addPage(String pageName, Component c) {
+    //     mainPanel.add(pageName, c);
+    // }
+
+    // public void addPage(Component c) {
+    //     mainPanel.add(c.getClass().getSimpleName(), c);
+    // }
+
+    private void addPages() {
+        // Add pages to main panel
+        // Error pages
+        mainPanel.add(new NoConnection(this), "NoConnection");
+
+        // Login page
+        mainPanel.add(new SelectLoginMethod(this), "SelectLoginMethod");
+
+        // Home page
+        // mainPanel.add(new Profile(this), "Profile");
+        // mainPanel.add(new Home(this), "Home");
+    }
+
+    public void setInitialPage() {
         if (!ConnectionAPI.checkConnection()) {
             showPage("NoConnection");
             return;
         }
 
-        // Check if token exists
-        String token = ConnectionAPI.readToken();
+        String token = ConnectionAPI.getToken();
 
         if (token == null || token.isEmpty()) {
             showPage("SelectLoginMethod");
@@ -90,6 +126,9 @@ public class MainFrame extends JFrame {
             if (response.getStatus() == 200) {
                 // Login successful, redirect to home page
                 showPage("Home");
+            } else {
+                // Login failed, redirect to login page
+                showPage("SelectLoginMethod");
             }
         } catch (IOException e) {
             e.printStackTrace();

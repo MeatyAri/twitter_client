@@ -3,12 +3,13 @@ package meaty.ServerAPIs;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Scanner;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.List;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -22,7 +23,8 @@ public class ConnectionAPI {
 
     private static SocketChannel socketChannel;
     private static long lastId = 0;
-    private static ArrayList<Response> responses = new ArrayList<>();
+    private static final List<Response> responses = new CopyOnWriteArrayList<>();
+    private static String token;
 
     static {
         try {
@@ -150,9 +152,13 @@ public class ConnectionAPI {
         }
     }
 
-    public static String readToken() {
+    private static String readToken() {
         try {
             File tokenFile = new File("token");
+            if (!tokenFile.exists()) {
+                return null;
+            }
+
             Scanner scanner = new Scanner(tokenFile);
             String token = scanner.nextLine();
             scanner.close();
@@ -161,5 +167,19 @@ public class ConnectionAPI {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static String getToken() {
+        if (token == null) {
+            String readToken = ConnectionAPI.readToken();
+
+            if (readToken == null || readToken.isEmpty()) {
+                return null;
+            }
+
+            token = readToken;
+        }
+
+        return token;
     }
 }

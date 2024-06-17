@@ -6,10 +6,16 @@ import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 
 public class imageEdits {
-    public static JLabel getResizeImage(String iconPath, int width, int height) {
+
+    public static Icon getResizeIcon(String iconPath, int width, int height) {
         Image image = new ImageIcon(iconPath).getImage();
         Image scaledImage = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-        JLabel imageIcon = new JLabel(new ImageIcon(scaledImage));
+        ImageIcon imageIcon = new ImageIcon(scaledImage);
+        return imageIcon;
+    }
+
+    public static JLabel getResizeImage(String iconPath, int width, int height) {
+        JLabel imageIcon = new JLabel(getResizeIcon(iconPath, width, height));
         return imageIcon;
     }
 

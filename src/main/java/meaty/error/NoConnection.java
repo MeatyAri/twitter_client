@@ -29,8 +29,8 @@ public class NoConnection extends JPanel {
         retryLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (ConnectionAPI.checkConnection()) {   
-                    mainFrame.showPage("SelectLoginMethod");
+                if (ConnectionAPI.checkConnection()) {
+                    mainFrame.setInitialPage();
                 }
             }
         });

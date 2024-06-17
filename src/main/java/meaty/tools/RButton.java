@@ -10,8 +10,18 @@ public class RButton extends JButton {
     private Color hoverColor = new Color(100,160,210);
     private int radius = 38;
 
+    public RButton(Icon icon) {
+        super(icon);        
+        init();
+        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    }
+
     public RButton(String text) {
         super(text);
+        init();
+    }
+
+    private void init() {
         setOpaque(false);
         setContentAreaFilled(false);
         setFocusPainted(false);

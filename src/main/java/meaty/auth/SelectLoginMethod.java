@@ -144,65 +144,97 @@ public class SelectLoginMethod extends JPanel {
 
     private JPanel createLoginPanel() {
         JPanel loginPanel = new RPanel();
-        loginPanel.setLayout(new GridBagLayout());
+        loginPanel.setLayout(new BorderLayout());
         loginPanel.setBackground(new Color(50, 50, 50));
+
+        // back button
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        topPanel.setOpaque(false);
+        RButton backButton = new RButton(imageEdits.getResizeIcon("static/imgs/back.png", 15, 15));
+        backButton.setNormalColor(new Color(70, 70, 70));
+        backButton.setHoverColor(new Color(90, 90, 90));
+        backButton.addActionListener(e -> {
+            cardLayout.show(rightPanel, "InitialPanel");
+        });
+        topPanel.add(backButton);
+        loginPanel.add(topPanel, BorderLayout.NORTH);
+
+        // content
+        JPanel contentPanel = new JPanel(new GridBagLayout());
+        contentPanel.setOpaque(false);
         GridBagConstraints c = new GridBagConstraints();
 
         // Twitter logo
-        JLabel logoLabel = new JLabel(new ImageIcon("static/imgs/twitter_logo.png"));
-        c.gridx = 0;
         c.gridy = 0;
         c.insets = new Insets(10, 20, 20, 20);
         c.anchor = GridBagConstraints.EAST;
         c.fill = GridBagConstraints.HORIZONTAL;
-        loginPanel.add(logoLabel, c);
+        JLabel logoLabel = new JLabel(new ImageIcon("static/imgs/twitter_logo.png"));
+        contentPanel.add(logoLabel, c);
 
         // Username field
+        c.gridy = 1;
+        c.insets = new Insets(5, 20, 5, 20);
         JLabel usernameLabel = new JLabel("Username:");
         usernameLabel.setForeground(new Color(200, 200, 200));
         JTextField usernameField = new RTextField(20);
         usernameField.setPreferredSize(new Dimension(0, 35));
-        c.gridx = 0;
-        c.gridy = 1;
-        c.insets = new Insets(5, 20, 5, 20);
-        loginPanel.add(usernameLabel, c);
+        contentPanel.add(usernameLabel, c);
         c.gridy = 2;
-        loginPanel.add(usernameField, c);
+        contentPanel.add(usernameField, c);
 
         // Password field
+        c.gridy = 3;
+        c.insets = new Insets(5, 20, 5, 20);
         JLabel passwordLabel = new JLabel("Password:");
         passwordLabel.setForeground(new Color(200, 200, 200));
         JPasswordField passwordField = new RPasswordField(20);
         passwordField.setPreferredSize(new Dimension(0, 35));
-        c.gridx = 0;
-        c.gridy = 3;
-        c.insets = new Insets(5, 20, 5, 20);
-        loginPanel.add(passwordLabel, c);
+        contentPanel.add(passwordLabel, c);
         c.gridy = 4;
-        loginPanel.add(passwordField, c);
+        contentPanel.add(passwordField, c);
 
         // Login button
+        c.gridy = 5;
+        c.insets = new Insets(20, 20, 10, 20);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.weightx = 1.0;
         RButton loginButton = new RButton("Log in");
         loginButton.setPreferredSize(new Dimension(200, 40));
         loginButton.setNormalColor(new Color(50, 150, 255));
         loginButton.setHoverColor(new Color(70, 170, 255));
         loginButton.setFont(new Font("Arial", Font.BOLD, 16));
-        c.gridx = 0;
-        c.gridy = 5;
-        c.insets = new Insets(20, 20, 10, 20);
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.weightx = 1.0;
-        loginPanel.add(loginButton, c);
+        contentPanel.add(loginButton, c);
 
         loginButton.addActionListener(e -> sendLoginRequest(usernameField, passwordField));
+
+        loginPanel.add(contentPanel, BorderLayout.CENTER);
 
         return loginPanel;
     }
 
     private JPanel createSignUpPanel() {
         JPanel signUpPanel = new RPanel();
-        signUpPanel.setLayout(new GridBagLayout());
+        signUpPanel.setLayout(new BorderLayout());
         signUpPanel.setBackground(new Color(50, 50, 50));
+
+        // back button
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        topPanel.setOpaque(false);
+        RButton backButton = new RButton(imageEdits.getResizeIcon("static/imgs/back.png", 15, 15));
+        backButton.setNormalColor(new Color(70, 70, 70));
+        backButton.setHoverColor(new Color(90, 90, 90));
+        backButton.addActionListener(e -> {
+            cardLayout.show(rightPanel, "InitialPanel");
+        });
+        topPanel.add(backButton);
+        signUpPanel.add(topPanel, BorderLayout.NORTH);
+
+        // Content panel
+        JPanel contentPanel = new RPanel();
+        contentPanel.setBackground(new Color(50, 50, 50));
+        contentPanel.setLayout(new GridBagLayout());
+
         GridBagConstraints c = new GridBagConstraints();
 
         // Twitter logo
@@ -212,57 +244,56 @@ public class SelectLoginMethod extends JPanel {
         c.insets = new Insets(10, 20, 10, 20);
         c.anchor = GridBagConstraints.EAST;
         c.fill = GridBagConstraints.HORIZONTAL;
-        signUpPanel.add(logoLabel, c);
+        contentPanel.add(logoLabel, c);
 
         // Username field
+        c.gridx = 0;
+        c.gridy = 1;
+        c.insets = new Insets(5, 20, 5, 20);
         JLabel usernameLabel = new JLabel("Username*:");
         usernameLabel.setForeground(new Color(200, 200, 200));
         JTextField usernameField = new RTextField(20);
         usernameField.setPreferredSize(new Dimension(0, 35));
-        c.gridx = 0;
-        c.gridy = 1;
-        c.insets = new Insets(5, 20, 5, 20);
-        signUpPanel.add(usernameLabel, c);
+        contentPanel.add(usernameLabel, c);
         c.gridy = 2;
-        signUpPanel.add(usernameField, c);
+        contentPanel.add(usernameField, c);
 
         // Password field
+        c.gridy = 3;
+        c.insets = new Insets(5, 20, 5, 20);
         JLabel passwordLabel = new JLabel("Password*:");
         passwordLabel.setForeground(new Color(200, 200, 200));
         JPasswordField passwordField = new RPasswordField(20);
         passwordField.setPreferredSize(new Dimension(0, 35));
-        c.gridx = 0;
-        c.gridy = 3;
-        c.insets = new Insets(5, 20, 5, 20);
-        signUpPanel.add(passwordLabel, c);
+        contentPanel.add(passwordLabel, c);
         c.gridy = 4;
-        signUpPanel.add(passwordField, c);
+        contentPanel.add(passwordField, c);
 
         // Email field
+        c.gridy = 5;
+        c.insets = new Insets(5, 20, 5, 20);
         JLabel emailLabel = new JLabel("Email:");
         emailLabel.setForeground(new Color(200, 200, 200));
         JTextField emailField = new RTextField(20);
         emailField.setPreferredSize(new Dimension(0, 35));
-        c.gridx = 0;
-        c.gridy = 5;
-        c.insets = new Insets(5, 20, 5, 20);
-        signUpPanel.add(emailLabel, c);
+        contentPanel.add(emailLabel, c);
         c.gridy = 6;
-        signUpPanel.add(emailField, c);
+        contentPanel.add(emailField, c);
 
         // Phone field
+        c.gridy = 7;
+        c.insets = new Insets(5, 20, 5, 20);
         JLabel phoneLabel = new JLabel("Phone:");
         phoneLabel.setForeground(new Color(200, 200, 200));
         JTextField phoneField = new RTextField(20);
         phoneField.setPreferredSize(new Dimension(0, 35));
-        c.gridx = 0;
-        c.gridy = 7;
-        c.insets = new Insets(5, 20, 5, 20);
-        signUpPanel.add(phoneLabel, c);
+        contentPanel.add(phoneLabel, c);
         c.gridy = 8;
-        signUpPanel.add(phoneField, c);
+        contentPanel.add(phoneField, c);
 
         // Birth date field
+        c.gridy = 9;
+        c.insets = new Insets(5, 20, 5, 20);
         JLabel birthDateLabel = new JLabel("Birth Date*:");
         birthDateLabel.setForeground(new Color(200, 200, 200));
 
@@ -270,14 +301,13 @@ public class SelectLoginMethod extends JPanel {
         JDatePanelImpl datePanel = new JDatePanelImpl(model);
         JDatePickerImpl datePicker = new JDatePickerImpl(datePanel);
 
-        c.gridx = 0;
-        c.gridy = 9;
-        c.insets = new Insets(5, 20, 5, 20);
-        signUpPanel.add(birthDateLabel, c);
+        contentPanel.add(birthDateLabel, c);
         c.gridy = 10;
-        signUpPanel.add(datePicker, c);
+        contentPanel.add(datePicker, c);
 
         // Bio field
+        c.gridy = 11;
+        c.insets = new Insets(5, 20, 5, 20);
         JLabel bioLabel = new JLabel("Bio:");
         bioLabel.setForeground(new Color(200, 200, 200));
         JTextArea bioField = new RTextArea(5, 20);
@@ -286,12 +316,9 @@ public class SelectLoginMethod extends JPanel {
         bioField.setPreferredSize(new Dimension(0, 75));
         JScrollPane bioScrollPane = new RScrollPane(bioField);
         bioScrollPane.setPreferredSize(new Dimension(0, 75));
-        c.gridx = 0;
-        c.gridy = 11;
-        c.insets = new Insets(5, 20, 5, 20);
-        signUpPanel.add(bioLabel, c);
+        contentPanel.add(bioLabel, c);
         c.gridy = 12;
-        signUpPanel.add(bioScrollPane, c);
+        contentPanel.add(bioScrollPane, c);
 
         // Sign Up button
         RButton signUpButton = new RButton("Sign Up");
@@ -304,11 +331,13 @@ public class SelectLoginMethod extends JPanel {
         c.insets = new Insets(20, 20, 10, 20);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.weightx = 1.0;
-        signUpPanel.add(signUpButton, c);
+        contentPanel.add(signUpButton, c);
 
         signUpButton.addActionListener(e -> {
             sendSignUpRequest(usernameField, passwordField, emailField, phoneField, datePicker, bioField);
         });
+
+        signUpPanel.add(contentPanel, BorderLayout.CENTER);
 
         return signUpPanel;
     }
