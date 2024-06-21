@@ -294,7 +294,7 @@ public class SelectLoginMethod extends JPanel {
         // Birth date field
         c.gridy = 9;
         c.insets = new Insets(5, 20, 5, 20);
-        JLabel birthDateLabel = new JLabel("Birth Date*:");
+        JLabel birthDateLabel = new JLabel("Birthday*:");
         birthDateLabel.setForeground(new Color(200, 200, 200));
 
         UtilDateModel model = new UtilDateModel();
@@ -390,16 +390,19 @@ public class SelectLoginMethod extends JPanel {
             long id = Auth.sendLoginRequest(username, password);
             Response response = ConnectionAPI.awaitResponse(id);
 
+            if (response.getStatus() != 200) {
+                JOptionPane.showMessageDialog(null, "Invalid username or password", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             String token = response.getData().get("token").getAsString();
             ConnectionAPI.saveToken(token);
 
             String responseStr = ConnectionAPI.getResponseStr(response);
             JOptionPane.showMessageDialog(null, responseStr);
 
-            if (response.getStatus() == 200) {
-                // Login successful, redirect to home page
-                mainFrame.showPage("Home");
-            }
+            // Login successful, redirect to home page
+            mainFrame.showPage("Home");
         } catch (IOException e) {
             e.printStackTrace();
         }

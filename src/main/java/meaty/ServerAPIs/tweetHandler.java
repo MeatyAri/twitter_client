@@ -21,6 +21,20 @@ public class tweetHandler {
         return ConnectionAPI.sendMessage(RequestType.GET_TWEETS, data);
     }
 
+    public static long getTweetsRequest(String username) throws IOException {
+        JsonObject data = new JsonObject();
+        data.addProperty("token", ConnectionAPI.getToken());
+        data.addProperty("username", username);
+        return ConnectionAPI.sendMessage(RequestType.GET_TWEETS, data);
+    }
+
+    public static long getBookmarkedTweetsRequest() throws IOException {
+        JsonObject data = new JsonObject();
+        data.addProperty("token", ConnectionAPI.getToken());
+        data.addProperty("bookmarks", true);
+        return ConnectionAPI.sendMessage(RequestType.GET_TWEETS, data);
+    }
+
     public static long LikeUnlikeTweetRequest(Long tweetId) throws IOException {
         JsonObject data = new JsonObject();
         data.addProperty("tweetId", tweetId);

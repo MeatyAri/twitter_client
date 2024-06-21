@@ -180,7 +180,13 @@ public class Home extends JPanel {
         profileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mainFrame.showPage("Profile");
+                try {
+                    long id =  ProfileHadler.sendGetSelfProfileRequest(ConnectionAPI.getToken());
+                    Response response = ConnectionAPI.awaitResponse(id);
+                    mainFrame.showPage("Profile", response.getData());
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         });
         c.gridy = 4;

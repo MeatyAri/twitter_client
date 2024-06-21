@@ -16,59 +16,27 @@ import meaty.ServerAPIs.*;
 import meaty.ServerAPIs.protocol.Response;
 import meaty.tools.*;
 
-public class Profile extends JPanel {
+public class Bookmarks extends JPanel {
     private MainFrame mainFrame;
-    private JsonObject data;
-    private JsonObject profileData;
     private JPanel containerPanel;
 
-    public Profile(MainFrame mainFrame, JsonObject data) {
+    public Bookmarks(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
-        this.data = data;
-        this.profileData = data.get("profile").getAsJsonObject();
-        Rectangle frameBounds = mainFrame.getBounds();
 
         setLayout(new GridBagLayout());
         setBackground(Color.BLACK);
         GridBagConstraints c = new GridBagConstraints();
 
-        // Info panel
-        JPanel infoPanelParent = new HalfPaintedPanel(50, 0, 0, 0);
-        infoPanelParent.setLayout(new GridBagLayout());
-        c.insets = new Insets(15, 15, 15, 5);
-        c.gridx = 0;
-        c.gridy = 0;
-        c.weightx = 0.3;
-        c.weighty = 1.0;
-        c.fill = GridBagConstraints.BOTH;
-        Dimension dims = new Dimension((int)(frameBounds.width * c.weightx), frameBounds.height);
-        infoPanelParent.setPreferredSize(dims);
-        infoPanelParent.setMinimumSize(dims);
-        infoPanelParent.setMaximumSize(dims);
-        add(infoPanelParent, c);
-
-        JPanel infoPanel = infoPanel();
-        c.insets = new Insets(0, 0, 0, 0);
-        c.gridx = 0;
-        c.gridy = 0;
-        c.anchor = GridBagConstraints.NORTH;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        infoPanelParent.add(infoPanel, c);
-        
         // Main panel
         JPanel mainPanelParent = new RPanel();
         mainPanelParent.setLayout(new GridBagLayout());
         mainPanelParent.setBackground(Color.BLACK);
-        c.insets = new Insets(15, 5, 15, 15);
-        c.gridx = 1;
+        c.insets = new Insets(15, 15, 15, 15);
+        c.gridx = 0;
         c.gridy = 0;
-        c.weightx = 0.7;
+        c.weightx = 1.0;
         c.weighty = 1.0;
         c.fill = GridBagConstraints.BOTH;
-        dims = new Dimension((int)(frameBounds.width * c.weightx), frameBounds.height);
-        mainPanelParent.setPreferredSize(dims);
-        mainPanelParent.setMinimumSize(dims);
-        mainPanelParent.setMaximumSize(dims);
         add(mainPanelParent, c);
 
         JScrollPane mainPanel = createMainPanel();
@@ -79,238 +47,6 @@ public class Profile extends JPanel {
         c.anchor = GridBagConstraints.CENTER;
         c.fill = GridBagConstraints.BOTH;
         mainPanelParent.add(mainPanel, c);
-    }
-
-    private JPanel infoPanel() {
-        JPanel infoPanel = new JPanel();
-        infoPanel.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        infoPanel.setOpaque(false);
-
-        JPanel topPanel = topPanel();
-        c.insets = new Insets(0, 10, 5, 10);
-        c.gridx = 0;
-        c.gridy = 0;
-        c.weightx = 1.0;
-        c.weighty = 0.2;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = GridBagConstraints.NORTH;
-        infoPanel.add(topPanel, c);
-
-        JPanel usernamePanel = new JPanel();
-        usernamePanel.setLayout(new GridBagLayout());
-        c.insets = new Insets(0, 10, 0, 10);
-        c.gridx = 0;
-        c.gridy = 1;
-        c.weightx = 1.0;
-        c.weighty = 0.2;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = GridBagConstraints.NORTH;
-        infoPanel.add(usernamePanel, c);
-
-        // username
-        JLabel username = new JLabel("@" + profileData.get("username").getAsString());
-        username.setFont(username.getFont().deriveFont(20f));
-        username.setForeground(Color.WHITE);
-        c.insets = new Insets(0, 10, 0, 10);
-        c.gridx = 0;
-        c.gridy = 0;
-        c.weightx = 1.0;
-        c.weighty = 0.2;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = GridBagConstraints.NORTHWEST;
-        usernamePanel.add(username, c);
-
-        // follow button
-        RButton followButton = new RButton("Follow");
-        c.insets = new Insets(10, 10, 30, 10);
-        c.gridx = 0;
-        c.gridy = 2;
-        c.weightx = 1.0;
-        c.weighty = 0.2;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = GridBagConstraints.NORTH;
-        infoPanel.add(followButton, c);
-        if (profileData.get("self").getAsBoolean()) {
-            followButton.setEnabled(false);
-        } else if (profileData.get("amIFollowing").getAsBoolean()) {
-            followButton.setText("Unfollow");
-            followButton.setNormalColor(new Color(200, 0, 0));
-            followButton.setHoverColor(new Color(255, 0, 0));
-        } else if (profileData.get("isFollowingBack").getAsBoolean()) {
-            followButton.setText("Follow back");
-        }
-
-        followButton.addActionListener(e -> {
-            if (!profileData.get("amIFollowing").getAsBoolean()) {
-                try {
-                    ProfileHadler.sendFollowRequest(ConnectionAPI.getToken(), profileData.get("username").getAsString());
-                    profileData.addProperty("followers_count", profileData.get("followers_count").getAsInt() + 1);
-                    profileData.addProperty("amIFollowing", true);
-
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            } else {
-                try {
-                    ProfileHadler.sendUnfollowRequest(ConnectionAPI.getToken(), profileData.get("username").getAsString());
-                    profileData.addProperty("followers_count", profileData.get("followers_count").getAsInt() - 1);
-                    profileData.addProperty("amIFollowing", false);
-
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            }
-
-            JsonObject newData = data;
-            newData.add("profile", profileData);
-            mainFrame.showPage("Profile", newData);
-        });
-
-        // add user's birthdate
-        JLabel birthdate = new JLabel("Birthday: " + profileData.get("birthDate").getAsString());
-        c.insets = new Insets(5, 10, 5, 10);
-        c.gridx = 0;
-        c.gridy = 3;
-        c.weightx = 1.0;
-        c.weighty = 0.2;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = GridBagConstraints.NORTH;
-        infoPanel.add(birthdate, c);
-
-        // add user's phone
-        String phoneNum = profileData.get("phone").getAsString();
-        JLabel phone = new JLabel("Phone: " + ((phoneNum == null) ? "Unknown" : phoneNum));
-        c.insets = new Insets(5, 10, 5, 10);
-        c.gridx = 0;
-        c.gridy = 4;
-        c.weightx = 1.0;
-        c.weighty = 0.2;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = GridBagConstraints.NORTH;
-        infoPanel.add(phone, c);
-
-        // add user's email
-        String emailAddr = profileData.get("email").getAsString();
-        JLabel email = new JLabel("Email: " + ((emailAddr == null) ? "Unknown" : emailAddr));
-        c.insets = new Insets(5, 10, 5, 10);
-        c.gridx = 0;
-        c.gridy = 5;
-        c.weightx = 1.0;
-        c.weighty = 0.2;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = GridBagConstraints.NORTH;
-        infoPanel.add(email, c);
-
-        // add user's bio
-        JLabel bioLabel = new JLabel("Bio: ");
-        c.insets = new Insets(5, 10, 5, 10);
-        c.gridx = 0;
-        c.gridy = 6;
-        c.weightx = 1.0;
-        c.weighty = 0.2;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = GridBagConstraints.NORTH;
-        infoPanel.add(bioLabel, c);
-
-        JTextArea bioTextArea = new RTextArea(8, 5);
-        String bioText = profileData.get("bio").getAsString();
-        bioTextArea.setText(bioText == null ? "Bio not available :(" : bioText);
-        bioTextArea.setEditable(false);
-        bioTextArea.setLineWrap(true);
-        bioTextArea.setWrapStyleWord(true);
-        bioTextArea.setBackground(infoPanel.getBackground().darker());
-        bioTextArea.setForeground(Color.WHITE);
-        c.insets = new Insets(5, 10, 5, 10);
-        c.gridx = 0;
-        c.gridy = 7;
-        c.weightx = 1.0;
-        c.weighty = 0.2;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = GridBagConstraints.NORTH;
-        infoPanel.add(bioTextArea, c);
-
-        return infoPanel;
-    }
-
-    private JPanel topPanel() {
-        JPanel topPanel = new JPanel();
-        topPanel.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        topPanel.setOpaque(false);
-
-        // Profile picture
-        BufferedImage profileImage = null;
-        try {
-            profileImage = ImageIO.read(new File("static/imgs/profile.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (profileImage != null) {
-            profileImage = imageEdits.getRoundedRectImage(profileImage, 200, 200, 50);
-            JLabel profilePic = new JLabel(new ImageIcon(profileImage));
-
-            c.insets = new Insets(0, 0, 0, 5);
-            c.gridx = 0;
-            c.gridy = 0;
-            c.weightx = 0.5;
-            c.weighty = 1.0;
-            c.anchor = GridBagConstraints.WEST;
-            topPanel.add(profilePic, c);
-        }
-
-        // Panel to hold follower and following labels and counts
-        JPanel rightPanel = new JPanel();
-        rightPanel.setLayout(new GridBagLayout());
-        GridBagConstraints rc = new GridBagConstraints();
-        
-        Font font = new Font("Liberation Sans", Font.BOLD, 21);
-
-        // followers count
-        JLabel followersCount = new JLabel(profileData.get("followers_count").getAsString());
-        followersCount.setFont(font);
-        rc.insets = new Insets(0, 0, 0, 0);
-        rc.gridx = 0;
-        rc.gridy = 0;
-        rc.anchor = GridBagConstraints.CENTER;
-        rightPanel.add(followersCount, rc);
-
-        // followers label
-        JLabel followersLabel = new JLabel("Followers");
-        followersLabel.setFont(font);
-        rc.insets = new Insets(0, 0, 0, 0);
-        rc.gridx = 0;
-        rc.gridy = 1;
-        rc.anchor = GridBagConstraints.CENTER;
-        rightPanel.add(followersLabel, rc);
-
-        // following count
-        JLabel followingCount = new JLabel(profileData.get("following_count").getAsString());
-        followingCount.setFont(font);
-        rc.insets = new Insets(15, 0, 0, 0);
-        rc.gridx = 0;
-        rc.gridy = 2;
-        rc.anchor = GridBagConstraints.CENTER;
-        rightPanel.add(followingCount, rc);
-
-        // following label
-        JLabel followingLabel = new JLabel("Following");
-        followingLabel.setFont(font);
-        rc.insets = new Insets(0, 0, 0, 0);
-        rc.gridx = 0;
-        rc.gridy = 3;
-        rc.anchor = GridBagConstraints.CENTER;
-        rightPanel.add(followingLabel, rc);
-        
-        // Put the right panel to the right of the profile picture
-        c.insets = new Insets(50, 0, 0, 0);
-        c.gridx = 1;
-        c.gridy = 0;
-        c.weightx = 0.5;
-        c.weighty = 1.0;
-        topPanel.add(rightPanel, c);
-        
-        return topPanel;
     }
 
     private JScrollPane createMainPanel() {
@@ -431,7 +167,7 @@ public class Profile extends JPanel {
         c.fill = GridBagConstraints.HORIZONTAL;
 
         try {
-            long reqId = tweetHandler.getTweetsRequest(profileData.get("username").getAsString());
+            long reqId = tweetHandler.getBookmarkedTweetsRequest();
             Response response = ConnectionAPI.awaitResponse(reqId);
             if (response.getStatus() == 200) {
                 JsonArray tweets = response.getData().get("tweets").getAsJsonArray();

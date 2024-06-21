@@ -3,6 +3,8 @@ package meaty;
 import java.io.IOException;
 import javax.swing.*;
 
+import com.google.gson.JsonObject;
+
 import meaty.auth.SelectLoginMethod;
 import meaty.home.*;
 import meaty.error.NoConnection;
@@ -33,24 +35,16 @@ public class MainFrame extends JFrame {
             e.printStackTrace();
         }
 
-        // // Create the bottom navigation bar
-        // JPanel bottomNav = new JPanel(new GridLayout(1, 4));
-        // JButton homeButton = new JButton("Home");
-        // JButton addPostButton = new JButton("Add Post");
-        // JButton profileButton = new JButton("Profile");
-
-        // bottomNav.add(homeButton);
-        // bottomNav.add(addPostButton);
-        // bottomNav.add(profileButton);
-
-        // // Add action listeners to switch pages
-        // homeButton.addActionListener(e -> showPage("Home"));
-        // addPostButton.addActionListener(e -> showPage("Add Post"));
-        // profileButton.addActionListener(e -> showPage("Profile"));
-
         // Set initial page
         setInitialPage();
-        // showPage("Home");
+
+        // try {
+        //     long id =  ProfileHadler.sendGetProfileRequest(ConnectionAPI.getToken(), "asd");
+        //     Response response = ConnectionAPI.awaitResponse(id);
+        //     showPage("Profile", response.getData());
+        // } catch (IOException e) {
+        //     e.printStackTrace();
+        // }
 
         // Add components to the frame
         add(mainPanel, BorderLayout.CENTER);
@@ -63,13 +57,36 @@ public class MainFrame extends JFrame {
         cardLayout.show(mainPanel, pageName);
     }
 
+    public void showPage(String pageName, JsonObject data) {
+        refreshPage(pageName, data);
+        cardLayout.show(mainPanel, pageName);
+    }
+
     public void refreshPage(String pageName) {
         switch (pageName) {
-            case "Profile":
-                mainPanel.add(new Profile(this), "Profile");
+            case "NoConnection":
+                break;
+            case "SelectLoginMethod":
                 break;
             case "Home":
                 mainPanel.add(new Home(this), "Home");
+                break;
+            case "Bookmarks":
+                mainPanel.add(new Bookmarks(this), "Bookmarks");
+                break;
+            default:
+                System.out.println("Invalid page name: " + pageName);
+                break;
+        }
+    }
+
+    public void refreshPage(String pageName, JsonObject data) {
+        switch (pageName) {
+            case "Profile":
+                mainPanel.add(new Profile(this, data), "Profile");
+                break;
+            default:
+                System.out.println("Invalid page name: " + pageName);
                 break;
         }
     }

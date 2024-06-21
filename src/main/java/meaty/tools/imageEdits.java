@@ -3,6 +3,7 @@ package meaty.tools;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 
 public class imageEdits {
@@ -50,6 +51,39 @@ public class imageEdits {
         g2d.dispose();
 
         return circularImage;
+    }
+
+    public static BufferedImage getRoundedRectImage(BufferedImage image, int width, int height, int radius) {
+        // Scale the image to the specified width and height
+        Image scaledImage = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        BufferedImage bufferedScaledImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+        Graphics2D g2 = bufferedScaledImage.createGraphics();
+        g2.drawImage(scaledImage, 0, 0, null);
+        g2.dispose();
+
+        // Create a rectangular mask
+        BufferedImage mask = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = mask.createGraphics();
+        applyQualityRenderingHints(g2d);
+        g2d.fill(new RoundRectangle2D.Double(0, 0, width, height, radius, radius));
+        g2d.dispose();
+
+        // Create the rectangular image with background
+        BufferedImage roundedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        g2d = roundedImage.createGraphics();
+        applyQualityRenderingHints(g2d);
+
+        // Set background color (change Color.WHITE to any other color as needed)
+        g2d.setColor(new Color(40, 40, 40));
+        g2d.fill(new RoundRectangle2D.Double(0, 0, width, height, radius, radius));
+
+        // Draw the scaled image
+        g2d.setComposite(AlphaComposite.SrcAtop);
+        g2d.drawImage(bufferedScaledImage, 0, 0, null);
+        g2d.dispose();
+
+        return roundedImage;
     }
 
     public static void applyQualityRenderingHints(Graphics2D g2d) {

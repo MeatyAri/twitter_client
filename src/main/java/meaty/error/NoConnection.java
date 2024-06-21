@@ -9,10 +9,10 @@ import meaty.MainFrame;
 
 
 public class NoConnection extends JPanel {
-    private MainFrame mainFrame;
+    // private MainFrame mainFrame;
 
     public NoConnection(MainFrame mainFrame) {
-        this.mainFrame = mainFrame;
+        // this.mainFrame = mainFrame;
 
         setLayout(new BorderLayout());
         setBackground(Color.DARK_GRAY);

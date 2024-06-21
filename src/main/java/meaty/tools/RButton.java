@@ -9,6 +9,7 @@ public class RButton extends JButton {
     private Color normalColor = new Color(70, 130, 180);
     private Color hoverColor = new Color(100,160,210);
     private int radius = 38;
+    private MouseListener mouseListener;
 
     public RButton(Icon icon) {
         super(icon);        
@@ -29,17 +30,8 @@ public class RButton extends JButton {
         setForeground(Color.WHITE);
         setBackground(normalColor);
 
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                setBackground(hoverColor);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                setBackground(normalColor);
-            }
-        });
+        mouseListener = createMouseListener();
+        addMouseListener(mouseListener);
     }
 
     @Override
@@ -76,5 +68,30 @@ public class RButton extends JButton {
         this.radius = radius;
 
         repaint();
+    }
+
+    private MouseListener createMouseListener() {
+        MouseListener ms = new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                setBackground(hoverColor);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                setBackground(normalColor);
+            }
+        };
+        return ms;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        if (!enabled) {
+            removeMouseListener(mouseListener);
+        } else {
+            addMouseListener(createMouseListener());
+        }
     }
 }
